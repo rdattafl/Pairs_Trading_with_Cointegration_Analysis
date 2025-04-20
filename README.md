@@ -83,7 +83,7 @@ The application is built using **Streamlit**, providing an intuitive and educati
 
 ```text
 notebook/
-├── app.py                  # Streamlit web app
+├── app.py                 # Streamlit web app
 ├── data_utils.py          # Data loading, cleaning, and return generation
 ├── pairs_analysis.py      # Cointegration tests, hedge ratio, spread, z-score logic
 ├── strategy_simulation.py # Backtest engine, trade tracking, performance metrics
