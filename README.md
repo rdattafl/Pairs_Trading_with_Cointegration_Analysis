@@ -6,6 +6,16 @@ The application is built using **Streamlit**, providing an intuitive and educati
 
 ---
 
+## 📚 Table of Contents
+
+- [Core Objectives](#core-objectives)
+- [Key Features](#key-features)
+- [How It Works (Quick Flow)](#how-it-works-quick-flow)
+- [Modular Structure](#modular-structure)
+- [Coming Enhancements](#coming-enhancements)
+
+---
+
 ## Core Objectives
 
 - Help users **identify cointegrated stock pairs** using rigorous statistical tests (Engle-Granger, Johansen).
