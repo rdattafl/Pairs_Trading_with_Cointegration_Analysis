@@ -5,3 +5,5 @@ numpy
 matplotlib
 statsmodels
 scipy
+seaborn
+datetime
