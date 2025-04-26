@@ -161,7 +161,7 @@ with tabs[1]:
         with st.spinner("Running Engle-Granger tests..."):
             coint_summary_df = analyze_multiple_pairs(cleaned_returns_dict)
 
-        st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
+        # st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
 
         st.success("✅ Cointegration analysis complete!")
 
@@ -170,24 +170,24 @@ with tabs[1]:
             use_container_width=True
         )
 
-        st.markdown("---")
+        # st.markdown("---")
 
-        st.subheader("📊 Filter Cointegrated Pairs Only")
+        # st.subheader("📊 Filter Cointegrated Pairs Only")
 
-        only_coint_pairs = st.checkbox("Show only pairs where cointegration detected (p < 0.05)", value=True)
+        # only_coint_pairs = st.checkbox("Show only pairs where cointegration detected (p < 0.05)", value=True)
 
-        if only_coint_pairs:
-            # Filtering: show if either direction has cointegration True
-            filtered_df = coint_summary_df[
-                (coint_summary_df.filter(like="Cointegrated").any(axis=1))
-            ]
-        else:
-            filtered_df = coint_summary_df
+        # if only_coint_pairs:
+        #     # Filtering: show if either direction has cointegration True
+        #     filtered_df = coint_summary_df[
+        #         (coint_summary_df.filter(like="Cointegrated").any(axis=1))
+        #     ]
+        # else:
+        #     filtered_df = coint_summary_df
 
-        st.dataframe(
-            filtered_df.style.background_gradient(cmap="PuBu"),
-            use_container_width=True
-        )
+        # st.dataframe(
+        #     filtered_df.style.background_gradient(cmap="PuBu"),
+        #     use_container_width=True
+        # )
 
 
 # === 6. Strategy Logic Per Pair ===
