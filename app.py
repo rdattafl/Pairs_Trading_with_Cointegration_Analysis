@@ -246,6 +246,9 @@ with tabs[2]:
                 volatility_scale=False
             )
 
+            st.line_chart(zscore_vol_adj_1)
+            st.line_chart(zscore_vol_adj_2)
+
             st.success("✅ Z-scores (volatility-adjusted) computed for both hedge directions!")
 
             signals_1 = generate_signals(
