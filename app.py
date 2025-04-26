@@ -35,11 +35,11 @@ available_pairs = [
 ]
 
 selected_pairs = st.sidebar.multiselect(
-    "Select Stock Pairs (max 5):",
+    "Select Stock Pairs (max 3):",
     options=available_pairs,
     default=[("KO", "PEP")],
-    max_selections=5,
-    help="Choose up to 5 stock pairs to analyze."
+    max_selections=3,
+    help="Choose up to 3 stock pairs to analyze."
 )
 
 download_data = st.sidebar.button("📥 Download Ticker Data for Selected Pairs")
