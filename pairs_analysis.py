@@ -72,10 +72,10 @@ def analyze_multiple_pairs(pair_data_dict, test_method='eg'):
 
         results.append({
             "Pair": f"{ticker1}/{ticker2}",
-            "P-Value ({}~{})".format(ticker1, ticker2): round(pval_1, 4),
+            "P-Value ({}~{})".format(ticker1, ticker2): pval_1,
             "Cointegrated ({}~{})".format(ticker1, ticker2): is_coint_1,
             "Hedge Ratio ({}~{})".format(ticker1, ticker2): round(hedge_ratio_1, 4),
-            "P-Value ({}~{})".format(ticker2, ticker1): round(pval_2, 4),
+            "P-Value ({}~{})".format(ticker2, ticker1): pval_2,
             "Cointegrated ({}~{})".format(ticker2, ticker1): is_coint_2,
             "Hedge Ratio ({}~{})".format(ticker2, ticker1): round(hedge_ratio_2, 4)
         })
