@@ -38,6 +38,7 @@ selected_pairs = st.sidebar.multiselect(
     "Select Stock Pairs (max 5):",
     options=available_pairs,
     default=[("KO", "PEP")],
+    max_selections=5,
     help="Choose up to 5 stock pairs to analyze."
 )
 
