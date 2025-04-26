@@ -317,7 +317,9 @@ with tabs[3]:
         # Extract hedge ratio and signals
         hedge_ratios = st.session_state['current_hedge_ratios']['hedge_ratio_1on2']
         signals = st.session_state['strategy_logic_df'][f"Position ({ticker1} ~ {ticker2})"].to_frame()
-        # signals.rename(columns={signals.columns[0]: 'curr_position'}, inplace=True)
+        signals.rename(columns={signals.columns[0]: 'curr_position'}, inplace=True)
+
+        st.write("Keys in signal:", list(signals.keys()))
 
         # 3. Prepare parameters
         backtest_params = {
