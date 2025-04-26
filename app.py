@@ -75,7 +75,7 @@ tabs = st.tabs([
     "🔍 Cointegration Analysis",
     "⚙️ Strategy Logic",
     "📈 Backtesting",
-    "📚 Glossary & Education"
+    "📚 Glossary & Education",
     "Export Options"
 ])
 
