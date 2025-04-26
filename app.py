@@ -185,46 +185,82 @@ with tabs[2]:
             st.subheader(f"Selected Pair: {ticker1} / {ticker2}")
 
             # 3. Compute rolling hedge ratio
-            hedge_ratio = calculate_hedge_ratio(
-                returns_df[ticker1], 
-                returns_df[ticker2],
-                method="rolling", 
-                window=60
+            hedge_ratio_1on2 = calculate_hedge_ratio(
+                returns_df[ticker1], returns_df[ticker2],
+                method="rolling", window=60
+            )
+            hedge_ratio_2on1 = calculate_hedge_ratio(
+                returns_df[ticker2], returns_df[ticker1],
+                method="rolling", window=60
             )
 
             # 4. Compute spread
-            spread = compute_spread(
-                returns_df[ticker1], 
-                returns_df[ticker2], 
-                hedge_ratio
+            spread_1on2 = compute_spread(
+                returns_df[ticker1], returns_df[ticker2], hedge_ratio_1on2
+            )
+            spread_2on1 = compute_spread(
+                returns_df[ticker2], returns_df[ticker1], hedge_ratio_2on1
             )
 
-            st.success("✅ Spread computed using rolling hedge ratio!")
+            st.success("✅ Rolling hedge ratios and spreads computed for both directions!")
 
-            # 5. Compute z-score
-            zscore_vol_adj = compute_zscore(
-                spread, 
-                lookback=60, 
-                volatility_scale=True
-            )
+            # === Expanders for visualization ===
+            with st.expander("📈 Rolling Hedge Ratios"):
+                fig, ax = plt.subplots(figsize=(10, 4))
+                ax.plot(hedge_ratio_1on2, label=f"{ticker1} ~ {ticker2}")
+                ax.plot(hedge_ratio_2on1, label=f"{ticker2} ~ {ticker1}")
+                ax.set_title("Rolling Hedge Ratios (60-day Window)")
+                ax.set_xlabel("Date")
+                ax.set_ylabel("Hedge Ratio")
+                ax.legend()
+                ax.grid(True)
+                st.pyplot(fig)
 
-            zscore_standard = compute_zscore(
-                spread, 
-                lookback=60, 
-                volatility_scale=False
-            )
+            with st.expander("📈 Spread Time Series"):
+                fig, ax = plt.subplots(figsize=(10, 4))
+                ax.plot(spread_1on2, label=f"Spread: {ticker1} - HR * {ticker2}")
+                ax.plot(spread_2on1, label=f"Spread: {ticker2} - HR * {ticker1}")
+                ax.set_title("Computed Spreads (Rolling Hedge Ratios)")
+                ax.set_xlabel("Date")
+                ax.set_ylabel("Spread Value")
+                ax.legend()
+                ax.grid(True)
+                st.pyplot(fig)
 
-            st.success("✅ Z-score (both standard and volatility-adjusted) computed!")
+            # === Save for further steps ===
+            st.session_state['current_spreads'] = {
+                'spread_1on2': spread_1on2,
+                'spread_2on1': spread_2on1
+            }
+            st.session_state['current_hedge_ratios'] = {
+                'hedge_ratio_1on2': hedge_ratio_1on2,
+                'hedge_ratio_2on1': hedge_ratio_2on1
+            }
 
-            # 6. Display a quick overview
-            st.markdown("### Preview of Spread and Z-Score")
-            st.dataframe(
-                pd.DataFrame({
-                    "Spread": spread,
-                    "Z-Score (Standard)": zscore_standard,
-                    "Z-Score (Volatility Adjusted)": zscore_vol_adj
-                }).dropna().head(10)
-            )
+            # # 5. Compute z-score
+            # zscore_vol_adj = compute_zscore(
+            #     spread, 
+            #     lookback=60, 
+            #     volatility_scale=True
+            # )
+
+            # zscore_standard = compute_zscore(
+            #     spread, 
+            #     lookback=60, 
+            #     volatility_scale=False
+            # )
+
+            # st.success("✅ Z-score (both standard and volatility-adjusted) computed!")
+
+            # # 6. Display a quick overview
+            # st.markdown("### Preview of Spread and Z-Score")
+            # st.dataframe(
+            #     pd.DataFrame({
+            #         "Spread": spread,
+            #         "Z-Score (Standard)": zscore_standard,
+            #         "Z-Score (Volatility Adjusted)": zscore_vol_adj
+            #     }).dropna().head(10)
+            # )
 
 
 
