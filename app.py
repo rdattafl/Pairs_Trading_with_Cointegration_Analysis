@@ -82,73 +82,90 @@ tx_cost_bps = st.sidebar.number_input("Transaction Cost (bps)", 0, 100, 5)
 run_portfolio = st.sidebar.checkbox("Run Portfolio Backtest", value=False)
 top_n = st.sidebar.slider("Top N Pairs to Trade", 1, 5, 3)
 
+tabs = st.tabs([
+    "📥 Data Download",
+    "🔍 Cointegration Analysis",
+    "⚙️ Strategy Logic",
+    "📈 Backtesting",
+    "📚 Glossary & Education"
+])
+
 # === 4. Data Download ===
 # Call download_pair_data or download_multiple_pairs
 # Clean data using clean_data(), get_returns()
-st.subheader("📥 Load and Preview Historical Price Data")
+with tabs[0]:
+    st.header("📥 Load and Clean Historical Price Data")
 
-if not selected_pairs:
-    st.warning("Please select at least one stock pair from the sidebar.")
-    st.stop()
-
-if download_data:
-    with st.spinner("Downloading and processing price data..."):
-        raw_pair_data = download_multiple_pairs(
-            selected_pairs,
-            start_date.strftime("%Y-%m-%d"),
-            end_date.strftime("%Y-%m-%d")
-        )
-
-    # st.write("✅ Raw downloaded data keys:", list(raw_pair_data.keys()))  # Force print to Streamlit
-
-    cleaned_returns_dict = {}
-    for pair_key, price_df in raw_pair_data.items():
-        # st.write(f"🔍 Checking raw price_df for pair {pair_key}")
-        # st.dataframe(price_df.head())  # Show first few rows if exists
-
-        try:
-            if price_df is not None and not price_df.empty:
-                returns_df = get_returns(price_df)
-                # st.write(f"📈 Returns sample for {pair_key}:")
-                # st.dataframe(returns_df.head())
-
-                if not returns_df.empty:
-                    cleaned_returns_dict[pair_key] = returns_df
-                else:
-                    st.warning(f"⚠️ No returns computed for pair {pair_key}.")
-            else:
-                st.warning(f"⚠️ No price data available for {pair_key}.")
-        except Exception as e:
-            st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
-
-    if not cleaned_returns_dict:
-        st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
+    if not selected_pairs:
+        st.warning("Please select at least one stock pair from the sidebar.")
         st.stop()
-    else:
-        st.success(f"✅ Successfully loaded {len(cleaned_returns_dict)} pair(s)!")
-        
-        # Show the returns dataframes in expandable sections
-        for pair_key, returns_df in cleaned_returns_dict.items():
-            with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
-                st.dataframe(returns_df)
+
+    if download_data:
+        with st.spinner("Downloading and processing price data..."):
+            raw_pair_data = download_multiple_pairs(
+                selected_pairs,
+                start_date.strftime("%Y-%m-%d"),
+                end_date.strftime("%Y-%m-%d")
+            )
+
+        # st.write("✅ Raw downloaded data keys:", list(raw_pair_data.keys()))  # Force print to Streamlit
+
+        cleaned_returns_dict = {}
+        for pair_key, price_df in raw_pair_data.items():
+            # st.write(f"🔍 Checking raw price_df for pair {pair_key}")
+            # st.dataframe(price_df.head())  # Show first few rows if exists
+
+            try:
+                if price_df is not None and not price_df.empty:
+                    returns_df = get_returns(price_df)
+                    # st.write(f"📈 Returns sample for {pair_key}:")
+                    # st.dataframe(returns_df.head())
+
+                    if not returns_df.empty:
+                        cleaned_returns_dict[pair_key] = returns_df
+                    else:
+                        st.warning(f"⚠️ No returns computed for pair {pair_key}.")
+                else:
+                    st.warning(f"⚠️ No price data available for {pair_key}.")
+            except Exception as e:
+                st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
+
+        if not cleaned_returns_dict:
+            st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
+            st.stop()
+        else:
+            st.success(f"✅ Successfully loaded {len(cleaned_returns_dict)} pair(s)!")
+            
+            # Show the returns dataframes in expandable sections
+            for pair_key, returns_df in cleaned_returns_dict.items():
+                with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
+                    st.dataframe(returns_df)
 
 
 # === 5. Cointegration Analysis ===
 # Call analyze_multiple_pairs(), display table and filtering
+with tabs[1]:
+    st.header("🔍 Cointegration Testing")
 
 
 # === 6. Strategy Logic Per Pair ===
 # Compute hedge ratio, spread, z-score, signals
 # Visualize spread and z-score
+with tabs[2]:
+    st.header("⚙️ Strategy Logic and Signals")
 
 
 # === 7. Backtesting (Per Pair or Portfolio) ===
 # simulate_backtest() or simulate_portfolio_backtest()
 # Show metrics and plots
+with tabs[3]:
+    st.header("📈 Backtesting and Portfolio Analysis")
 
 
 # === 8. Glossary / Educational Panel ===
 # Use st.sidebar.expander or st.expander blocks
+with tabs[4]:
+    st.header("📚 Glossary and Educational Insights")
 
 
 # === 9. Export Options ===
