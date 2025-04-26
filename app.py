@@ -90,11 +90,16 @@ tabs = st.tabs([
     "📚 Glossary & Education"
 ])
 
+if 'cleaned_returns_dict' not in st.session_state:
+    st.session_state['cleaned_returns_dict'] = {}
+
 # === 4. Data Download ===
 # Call download_pair_data or download_multiple_pairs
 # Clean data using clean_data(), get_returns()
 with tabs[0]:
     st.header("📥 Load and Clean Historical Price Data")
+
+    cleaned_returns_dict = st.session_state['cleaned_returns_dict']
 
     if not selected_pairs:
         st.warning("Please select at least one stock pair from the sidebar.")
@@ -110,7 +115,7 @@ with tabs[0]:
 
         # st.write("✅ Raw downloaded data keys:", list(raw_pair_data.keys()))  # Force print to Streamlit
 
-        cleaned_returns_dict = {}
+        temp_returns_dict = {}
         for pair_key, price_df in raw_pair_data.items():
             # st.write(f"🔍 Checking raw price_df for pair {pair_key}")
             # st.dataframe(price_df.head())  # Show first few rows if exists
@@ -122,7 +127,7 @@ with tabs[0]:
                     # st.dataframe(returns_df.head())
 
                     if not returns_df.empty:
-                        cleaned_returns_dict[pair_key] = returns_df
+                        temp_returns_dict[pair_key] = returns_df
                     else:
                         st.warning(f"⚠️ No returns computed for pair {pair_key}.")
                 else:
@@ -130,17 +135,18 @@ with tabs[0]:
             except Exception as e:
                 st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
 
-        if not cleaned_returns_dict:
+        if not temp_returns_dict:
             st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
             st.stop()
         else:
-            st.success(f"✅ Successfully loaded {len(cleaned_returns_dict)} pair(s)!")
-            st.session_state['cleaned_returns_dict'] = cleaned_returns_dict
+            st.success(f"✅ Successfully loaded {len(temp_returns_dict)} pair(s)!")
+            st.session_state['cleaned_returns_dict'] = temp_returns_dict
+            cleaned_returns_dict = temp_returns_dict
             
-            # Show the returns dataframes in expandable sections
-            for pair_key, returns_df in cleaned_returns_dict.items():
-                with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
-                    st.dataframe(returns_df)
+    # Show the returns dataframes in expandable sections
+    for pair_key, returns_df in cleaned_returns_dict.items():
+        with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
+            st.dataframe(returns_df)
 
 
 # === 5. Cointegration Analysis ===
