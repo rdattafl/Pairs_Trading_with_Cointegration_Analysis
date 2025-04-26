@@ -36,7 +36,7 @@ def download_multiple_pairs(ticker_pairs, start_date, end_date):
         dict: Dictionary where each key is a (ticker1, ticker2) tuple and value is a cleaned Adj Close DataFrame.
     """
     all_tickers = sorted(set([ticker for pair in ticker_pairs for ticker in pair]))
-    raw_data = yf.download(all_tickers, start=start_date, end=end_date, auto_adjust=True, group_by='ticker')
+    raw_data = yf.download(all_tickers, start=start_date, end=end_date, auto_adjust=True)
 
     cleaned_pairs = {}
     for ticker1, ticker2 in ticker_pairs:
