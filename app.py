@@ -237,13 +237,13 @@ with tabs[2]:
             zscore_vol_adj_1 = compute_zscore(
                 spread_1on2, 
                 lookback=60, 
-                volatility_scale=True
+                volatility_scale=False
             )
 
             zscore_vol_adj_2 = compute_zscore(
                 spread_2on1, 
                 lookback=60, 
-                volatility_scale=True
+                volatility_scale=False
             )
 
             st.success("✅ Z-scores (volatility-adjusted) computed for both hedge directions!")
