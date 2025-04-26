@@ -102,8 +102,14 @@ if download_data:
         cleaned_returns_dict = {}
         for pair_key, price_df in raw_pair_data.items():
             try:
-                returns_df = get_returns(price_df)
-                cleaned_returns_dict[pair_key] = returns_df
+                if price_df is not None and not price_df.empty:
+                    returns_df = get_returns(price_df)
+                    if not returns_df.empty:
+                        cleaned_returns_dict[pair_key] = returns_df
+                    else:
+                        st.warning(f"No returns computed for pair {pair_key}.")
+                else:
+                    st.warning(f"No price data available for {pair_key}.")
             except Exception as e:
                 st.error(f"Failed to process returns for pair {pair_key}: {e}")
 
