@@ -156,6 +156,8 @@ with tabs[1]:
     with st.spinner("Running Engle-Granger tests..."):
         coint_summary_df = analyze_multiple_pairs(cleaned_returns_dict)
 
+    st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
+
     st.success("✅ Cointegration analysis complete!")
 
     st.dataframe(
