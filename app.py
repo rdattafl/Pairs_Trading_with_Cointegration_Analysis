@@ -6,20 +6,6 @@
 # metrics (CAGR, Sharpe ratio, max drawdown, win rate, average holding time). Educational tooltips and plots help build 
 # intuitive understanding of market-neutral stat arb strategies.
 
-"""
-Concrete additions our app could support:
-
-Feature	Description
-🔁 Multiple Pairs	Loop through and rank stock pairs by p-value from Engle-Granger test
-⚙️ Parameter Tuning	Let user run grid search on entry/exit thresholds
-🧮 Trade Log Table	Show per-trade return, duration, win/loss
-💸 Transaction Costs	Optional toggles/sliders to apply slippage or fixed per-trade cost
-💡 Dynamic z-score	Use volatility-adjusted or exponentially-weighted z-score
-📊 Portfolio View	Combine multiple cointegrated pairs for aggregate market-neutral strategy
-📥 Export CSV	Allow download of trade logs or cumulative return series
-🧠 Educational Tooltips	Use Streamlit expander/tooltips to explain concepts interactively (e.g., “What is Cointegration?”)
-"""
-
 # === 1. App Config and Imports ===
 
 import streamlit as st
@@ -139,7 +125,6 @@ with tabs[0]:
 
             if not temp_returns_dict:
                 st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
-                st.stop()
             else:
                 st.success(f"✅ Successfully loaded {len(temp_returns_dict)} pair(s)!")
                 st.session_state['cleaned_returns_dict'] = temp_returns_dict
