@@ -147,6 +147,41 @@ with tabs[0]:
 with tabs[1]:
     st.header("🔍 Cointegration Testing")
 
+    if not cleaned_returns_dict:
+        st.warning("Please first download stock pair data from the sidebar.")
+        st.stop()
+
+    st.subheader("Run Cointegration Tests Across Pairs")
+
+    with st.spinner("Running Engle-Granger tests..."):
+        coint_summary_df = analyze_multiple_pairs(cleaned_returns_dict)
+
+    st.success("✅ Cointegration analysis complete!")
+
+    st.dataframe(
+        coint_summary_df.style.background_gradient(cmap="YlGnBu"),
+        use_container_width=True
+    )
+
+    st.markdown("---")
+
+    st.subheader("📊 Filter Cointegrated Pairs Only")
+
+    only_coint_pairs = st.checkbox("Show only pairs where cointegration detected (p < 0.05)", value=True)
+
+    if only_coint_pairs:
+        # Filtering: show if either direction has cointegration True
+        filtered_df = coint_summary_df[
+            (coint_summary_df.filter(like="Cointegrated").any(axis=1))
+        ]
+    else:
+        filtered_df = coint_summary_df
+
+    st.dataframe(
+        filtered_df.style.background_gradient(cmap="PuBu"),
+        use_container_width=True
+    )
+
 
 # === 6. Strategy Logic Per Pair ===
 # Compute hedge ratio, spread, z-score, signals

@@ -53,28 +53,6 @@ def download_multiple_pairs(ticker_pairs, start_date, end_date):
 
     return cleaned_pairs
 
-def clean_data(data):
-    """
-    Clean the raw Yahoo Finance data by removing NaNs.
-
-    Args:
-        data (pd.DataFrame): MultiIndex DataFrame from yfinance.
-
-    Returns:
-        pd.DataFrame: Cleaned DataFrame with only 'Adj Close' values.
-    """
-    # Ensure data has exactly two tickers
-    if not isinstance(data.columns, pd.MultiIndex):
-        raise ValueError("Expected multi-index DataFrame from yfinance with 'Adj Close' columns.")
-
-    adj_close = data['Adj Close']
-
-    if adj_close.shape[1] != 2:
-        raise ValueError("Expected exactly two tickers under 'Adj Close'.")
-
-    adj_close = adj_close.dropna()
-    return adj_close
-
 def get_returns(data):
     """
     Calculate log or simple returns from price data.
