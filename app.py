@@ -103,50 +103,49 @@ with tabs[0]:
 
     if not selected_pairs:
         st.warning("Please select at least one stock pair from the sidebar.")
-        st.stop()
+    else:
+        if download_data:
+            with st.spinner("Downloading and processing price data..."):
+                raw_pair_data = download_multiple_pairs(
+                    selected_pairs,
+                    start_date.strftime("%Y-%m-%d"),
+                    end_date.strftime("%Y-%m-%d")
+                )
 
-    if download_data:
-        with st.spinner("Downloading and processing price data..."):
-            raw_pair_data = download_multiple_pairs(
-                selected_pairs,
-                start_date.strftime("%Y-%m-%d"),
-                end_date.strftime("%Y-%m-%d")
-            )
+            # st.write("✅ Raw downloaded data keys:", list(raw_pair_data.keys()))  # Force print to Streamlit
 
-        # st.write("✅ Raw downloaded data keys:", list(raw_pair_data.keys()))  # Force print to Streamlit
+            temp_returns_dict = {}
+            for pair_key, price_df in raw_pair_data.items():
+                # st.write(f"🔍 Checking raw price_df for pair {pair_key}")
+                # st.dataframe(price_df.head())  # Show first few rows if exists
 
-        temp_returns_dict = {}
-        for pair_key, price_df in raw_pair_data.items():
-            # st.write(f"🔍 Checking raw price_df for pair {pair_key}")
-            # st.dataframe(price_df.head())  # Show first few rows if exists
+                try:
+                    if price_df is not None and not price_df.empty:
+                        returns_df = get_returns(price_df)
+                        # st.write(f"📈 Returns sample for {pair_key}:")
+                        # st.dataframe(returns_df.head())
 
-            try:
-                if price_df is not None and not price_df.empty:
-                    returns_df = get_returns(price_df)
-                    # st.write(f"📈 Returns sample for {pair_key}:")
-                    # st.dataframe(returns_df.head())
-
-                    if not returns_df.empty:
-                        temp_returns_dict[pair_key] = returns_df
+                        if not returns_df.empty:
+                            temp_returns_dict[pair_key] = returns_df
+                        else:
+                            st.warning(f"⚠️ No returns computed for pair {pair_key}.")
                     else:
-                        st.warning(f"⚠️ No returns computed for pair {pair_key}.")
-                else:
-                    st.warning(f"⚠️ No price data available for {pair_key}.")
-            except Exception as e:
-                st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
+                        st.warning(f"⚠️ No price data available for {pair_key}.")
+                except Exception as e:
+                    st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
 
-        if not temp_returns_dict:
-            st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
-            st.stop()
-        else:
-            st.success(f"✅ Successfully loaded {len(temp_returns_dict)} pair(s)!")
-            st.session_state['cleaned_returns_dict'] = temp_returns_dict
-            cleaned_returns_dict = temp_returns_dict
-            
-    # Show the returns dataframes in expandable sections
-    for pair_key, returns_df in cleaned_returns_dict.items():
-        with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
-            st.dataframe(returns_df)
+            if not temp_returns_dict:
+                st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
+                st.stop()
+            else:
+                st.success(f"✅ Successfully loaded {len(temp_returns_dict)} pair(s)!")
+                st.session_state['cleaned_returns_dict'] = temp_returns_dict
+                cleaned_returns_dict = temp_returns_dict
+                
+        # Show the returns dataframes in expandable sections
+        for pair_key, returns_df in cleaned_returns_dict.items():
+            with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
+                st.dataframe(returns_df)
 
 
 # === 5. Cointegration Analysis ===
@@ -154,42 +153,41 @@ with tabs[0]:
 with tabs[1]:
     st.header("🔍 Cointegration Testing")
 
-    if not cleaned_returns_dict:
+    if not st.session_state.get('cleaned_returns_dict'):
         st.warning("Please first download stock pair data from the sidebar.")
-        st.stop()
-
-    st.subheader("Run Cointegration Tests Across Pairs")
-
-    with st.spinner("Running Engle-Granger tests..."):
-        coint_summary_df = analyze_multiple_pairs(cleaned_returns_dict)
-
-    st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
-
-    st.success("✅ Cointegration analysis complete!")
-
-    st.dataframe(
-        coint_summary_df.style.background_gradient(cmap="YlGnBu"),
-        use_container_width=True
-    )
-
-    st.markdown("---")
-
-    st.subheader("📊 Filter Cointegrated Pairs Only")
-
-    only_coint_pairs = st.checkbox("Show only pairs where cointegration detected (p < 0.05)", value=True)
-
-    if only_coint_pairs:
-        # Filtering: show if either direction has cointegration True
-        filtered_df = coint_summary_df[
-            (coint_summary_df.filter(like="Cointegrated").any(axis=1))
-        ]
     else:
-        filtered_df = coint_summary_df
+        st.subheader("Run Cointegration Tests Across Pairs")
 
-    st.dataframe(
-        filtered_df.style.background_gradient(cmap="PuBu"),
-        use_container_width=True
-    )
+        with st.spinner("Running Engle-Granger tests..."):
+            coint_summary_df = analyze_multiple_pairs(cleaned_returns_dict)
+
+        st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
+
+        st.success("✅ Cointegration analysis complete!")
+
+        st.dataframe(
+            coint_summary_df.style.background_gradient(cmap="YlGnBu"),
+            use_container_width=True
+        )
+
+        st.markdown("---")
+
+        st.subheader("📊 Filter Cointegrated Pairs Only")
+
+        only_coint_pairs = st.checkbox("Show only pairs where cointegration detected (p < 0.05)", value=True)
+
+        if only_coint_pairs:
+            # Filtering: show if either direction has cointegration True
+            filtered_df = coint_summary_df[
+                (coint_summary_df.filter(like="Cointegrated").any(axis=1))
+            ]
+        else:
+            filtered_df = coint_summary_df
+
+        st.dataframe(
+            filtered_df.style.background_gradient(cmap="PuBu"),
+            use_container_width=True
+        )
 
 
 # === 6. Strategy Logic Per Pair ===
