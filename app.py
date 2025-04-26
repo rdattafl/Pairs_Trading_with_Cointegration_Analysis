@@ -156,7 +156,7 @@ with tabs[1]:
     if not st.session_state.get('cleaned_returns_dict'):
         st.warning("Please first download stock pair data from the sidebar.")
     else:
-        st.subheader("Run Cointegration Tests Across Pairs")
+        # st.subheader("Run Cointegration Tests Across Pairs")
 
         with st.spinner("Running Engle-Granger tests..."):
             coint_summary_df = analyze_multiple_pairs(cleaned_returns_dict)
