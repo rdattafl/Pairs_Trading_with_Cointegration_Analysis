@@ -275,6 +275,7 @@ with tabs[2]:
             strategy_logic_df.dropna(inplace=True)
 
             st.session_state['strategy_logic_df'] = strategy_logic_df
+            st.session_state['selected_pair_name'] = f"{ticker1}_{ticker2}"
 
             st.markdown("### 📈 Strategy Signals and Z-Scores Overview")
             st.dataframe(
@@ -384,11 +385,13 @@ with tabs[5]:
 
     st.markdown("You can export key outputs for further offline analysis.")
 
-    if 'strategy_logic_df' in st.session_state:
+    if 'strategy_logic_df' in st.session_state and 'selected_pair_name' in st.session_state:
+        filename = f"strategy_logic_signals_{st.session_state['selected_pair_name']}.csv"
+
         st.download_button(
-            label="📥 Download Strategy Logic (CSV)",
+            label=f"📥 Download Strategy Logic ({st.session_state['selected_pair_name']})",
             data=st.session_state['strategy_logic_df'].to_csv(index=True),
-            file_name="strategy_logic_signals.csv",
+            file_name=filename,
             mime="text/csv",
         )
     else:
