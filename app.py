@@ -179,7 +179,7 @@ with tabs[1]:
 with tabs[2]:
     st.header("⚙️ Strategy Logic and Signals")
 
-    
+
 
 # === 7. Backtesting (Per Pair or Portfolio) ===
 # simulate_backtest() or simulate_portfolio_backtest()
@@ -192,6 +192,86 @@ with tabs[3]:
 # Use st.sidebar.expander or st.expander blocks
 with tabs[4]:
     st.header("📚 Glossary and Educational Insights")
+
+    st.markdown(
+        """
+        Learn about key concepts used in this Pairs Trading app.
+        Expand the sections below for detailed explanations.
+        """
+    )
+
+    with st.expander("Pairs Trading Overview"):
+        st.markdown(
+            """
+            **Pairs Trading** is a market-neutral strategy that involves finding two historically correlated assets. 
+            When their relationship deviates beyond a typical range (measured by statistical indicators like z-scores),
+            a trade is executed to bet on the convergence of their prices. 
+            One asset is typically shorted while the other is bought.
+            """
+        )
+
+    with st.expander("Cointegration and Its Importance"):
+        st.markdown(
+            """
+            **Cointegration** refers to a statistical relationship between two or more time series
+            where their combination results in a stable, mean-reverting spread over time, 
+            even if the individual series themselves are non-stationary.
+            
+            In pairs trading, identifying cointegrated pairs is critical because it ensures 
+            that the spread between the assets behaves predictably, enabling mean-reversion strategies.
+            """
+        )
+
+    with st.expander("Hedge Ratio"):
+        st.markdown(
+            """
+            The **hedge ratio** represents the relative weight between two assets to create a stationary spread.
+            It's typically calculated via **Ordinary Least Squares (OLS)** regression or using a rolling-window method.
+            
+            In this app, we allow you to choose either:
+            - **Static OLS**: A single hedge ratio over the entire dataset.
+            - **Rolling Hedge**: A dynamically updating hedge ratio based on recent data windows.
+            """
+        )
+
+    with st.expander("Z-Score and Dynamic Thresholds"):
+        st.markdown(
+            """
+            The **z-score** measures how far the current spread deviates from its historical mean,
+            in units of standard deviations.
+            
+            - A **static z-score** assumes constant volatility over time.
+            - A **dynamic z-score** adjusts for rolling volatility, making entry/exit signals more adaptive 
+              to changing market conditions.
+            
+            Trading signals are generated when the z-score crosses predefined thresholds.
+            """
+        )
+
+    with st.expander("Entry, Exit, and Risk Management"):
+        st.markdown(
+            """
+            Once a trade is entered based on z-score thresholds:
+            
+            - **Exit** occurs either when the spread reverts back (z-score near zero), or based on a **take-profit** or **stop-loss** rule.
+            - **Max Hold Days** ensures that no trade stays open indefinitely if conditions don't resolve.
+            - **Cooldown Days** prevent immediate re-entry after closing a position to avoid over-trading.
+
+            These risk controls are critical for managing drawdowns and maintaining strategy discipline.
+            """
+        )
+
+    with st.expander("Slippage and Transaction Costs"):
+        st.markdown(
+            """
+            **Slippage** accounts for imperfect execution when entering or exiting trades — prices move slightly 
+            against you before the trade completes.
+            
+            **Transaction Costs** represent broker fees, bid/ask spreads, and other trading costs.
+            
+            This app allows you to configure both slippage (bps) and transaction costs (bps) to simulate more realistic trading performance.
+            """
+        )
 
 
 # === 9. Export Options ===
