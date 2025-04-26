@@ -38,6 +38,8 @@ def download_multiple_pairs(ticker_pairs, start_date, end_date):
     all_tickers = sorted(set([ticker for pair in ticker_pairs for ticker in pair]))
     raw_data = yf.download(all_tickers, start=start_date, end=end_date, auto_adjust=False, group_by='ticker')
 
+    print(raw_data.keys())
+
     cleaned_pairs = {}
     for ticker1, ticker2 in ticker_pairs:
         try:
