@@ -76,6 +76,7 @@ tabs = st.tabs([
     "⚙️ Strategy Logic",
     "📈 Backtesting",
     "📚 Glossary & Education"
+    "Export Options"
 ])
 
 if 'cleaned_returns_dict' not in st.session_state:
@@ -273,6 +274,8 @@ with tabs[2]:
 
             strategy_logic_df.dropna(inplace=True)
 
+            st.session_state['strategy_logic_df'] = strategy_logic_df
+
             st.markdown("### 📈 Strategy Signals and Z-Scores Overview")
             st.dataframe(
                 strategy_logic_df.style.background_gradient(cmap="coolwarm"),
@@ -376,7 +379,20 @@ with tabs[4]:
 
 # === 9. Export Options ===
 # st.download_button for DataFrame CSV export
+with tabs[5]:
+    st.header("💾 Export Results")
 
+    st.markdown("You can export key outputs for further offline analysis.")
+
+    if 'strategy_logic_df' in st.session_state:
+        st.download_button(
+            label="📥 Download Strategy Logic (CSV)",
+            data=st.session_state['strategy_logic_df'].to_csv(index=True),
+            file_name="strategy_logic_signals.csv",
+            mime="text/csv",
+        )
+    else:
+        st.info("ℹ️ Strategy logic not computed yet. Run a simulation first.")
 
 
 
