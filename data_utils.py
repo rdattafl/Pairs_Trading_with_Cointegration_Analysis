@@ -6,23 +6,6 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-def download_pair_data(ticker_1, ticker_2, start_date, end_date):
-    """
-    Download adjusted close price data for two tickers from Yahoo Finance.
-
-    Args:
-        ticker_1 (str): First ticker symbol.
-        ticker_2 (str): Second ticker symbol.
-        start_date (str): Start date in 'YYYY-MM-DD' format.
-        end_date (str): End date in 'YYYY-MM-DD' format.
-
-    Returns:
-        pd.DataFrame: MultiIndex DataFrame with adjusted close prices.
-    """
-    tickers = [ticker_1, ticker_2]
-    data = yf.download(tickers, start=start_date, end=end_date, auto_adjust=False)
-    return data
-
 def download_multiple_pairs(ticker_pairs, start_date, end_date):
     """
     Download adjusted close price data for multiple stock pairs.

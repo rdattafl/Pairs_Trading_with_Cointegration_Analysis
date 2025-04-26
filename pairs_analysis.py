@@ -7,25 +7,6 @@ import statsmodels.api as sm
 from statsmodels.tsa.stattools import coint, adfuller
 from statsmodels.tsa.vector_ar.vecm import coint_johansen
 
-def test_cointegration(ts1, ts2):
-    """
-    Perform Engle-Granger cointegration test on two price series.
-    Returns the p-value and test statistic.
-    """
-    score, pval, _ = coint(ts1, ts2)
-    return {"p_value": pval, "test_statistic": score}
-
-def johansen_test(log_df, det_order=0, k_ar_diff=1):
-    """
-    Perform Johansen cointegration test on a log-transformed DataFrame.
-    Returns trace statistics and critical values (90%, 95%, 99%).
-    """
-    johan = coint_johansen(log_df, det_order, k_ar_diff)
-    return {
-        "trace_stat": johan.lr1.tolist(),
-        "crit_vals": johan.cvt.tolist()
-    }
-
 def calculate_hedge_ratio(ts1, ts2, method="rolling" or "ols", window=60):
     """
     Calculate the hedge ratio (beta) between two price series.
@@ -81,34 +62,25 @@ def compute_spread(ts1, ts2, hedge_ratio):
     """
     return ts1 - hedge_ratio * ts2
 
-def compute_zscore(spread, lookback=60):
+def compute_zscore(spread, lookback=60, volatility_scale=True):
     """
-    Compute z-score of spread over a rolling window (60 days by default).
+    Compute z-score of the spread, optionally scaled by volatility bands.
+
+    Args:
+        spread (pd.Series): Spread time series.
+        lookback (int): Rolling window size.
+        volatility_scale (bool): If True, scale by rolling std of std.
+
+    Returns:
+        pd.Series: Z-score series.
     """
     mean = spread.rolling(lookback).mean()
     std = spread.rolling(lookback).std()
-    zscore = (spread - mean) / std
-    return zscore.dropna()
-
-def compute_dynamic_zscore(spread, lookback=60, volatility_scale=True):
-    """
-    Compute a dynamic z-score of the spread, optionally scaled by rolling volatility.
-
-    Args:
-        spread (pd.Series): Time series spread between asset pairs.
-        lookback (int): Lookback window for rolling stats.
-        volatility_scale (bool): Whether to scale z-score by volatility bands.
-
-    Returns:
-        pd.Series: Time series of z-scores.
-    """
-    rolling_mean = spread.rolling(window=lookback).mean()
-    rolling_std = spread.rolling(window=lookback).std()
 
     if volatility_scale:
-        dynamic_threshold = rolling_std.rolling(window=lookback).mean()
-        zscore = (spread - rolling_mean) / dynamic_threshold
+        dynamic_band = std.rolling(lookback).mean()
+        zscore = (spread - mean) / dynamic_band
     else:
-        zscore = (spread - rolling_mean) / rolling_std
+        zscore = (spread - mean) / std
 
     return zscore.dropna()

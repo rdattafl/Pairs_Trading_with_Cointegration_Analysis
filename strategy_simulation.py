@@ -3,61 +3,20 @@
 import pandas as pd
 import numpy as np
 
-def generate_signals(z_scores: pd.Series, entry_threshold: float, exit_threshold: float) -> pd.DataFrame:
+def generate_signals(z_scores, entry_band=1.5, exit_band=0.05):
     """
-    Generate trading signals based on z-score thresholds.
+    Generate long/short/exit signals based on z-scores and thresholds.
 
     Args:
-        z_scores (pd.Series): Z-score of the spread.
-        entry_threshold (float): Threshold to initiate long/short positions.
-        exit_threshold (float): Threshold to exit positions.
+        z_scores (pd.Series): Z-score time series.
+        entry_band (float): Entry threshold.
+        exit_band (float): Exit threshold.
 
     Returns:
-        pd.DataFrame: DataFrame with Long, Short, Exit, Z-Score, and curr_position columns.
-    """
-    signals = pd.DataFrame(index=z_scores.index)
-    signals["Long"] = (z_scores < -entry_threshold).astype(int)
-    signals["Short"] = (z_scores > entry_threshold).astype(int)
-    signals["Exit"] = (abs(z_scores) < exit_threshold).astype(int)
-    signals["Z-Score"] = z_scores
-
-    signals["curr_position"] = 0
-    in_position = 0
-
-    for i in range(1, len(signals)):
-        long_signal = signals.iloc[i]['Long']
-        short_signal = signals.iloc[i]['Short']
-        exit_signal = signals.iloc[i]['Exit']
-
-        if in_position == 0:
-            if long_signal == 1:
-                in_position = 1
-            elif short_signal == 1:
-                in_position = -1
-        elif in_position != 0:
-            if exit_signal == 1:
-                in_position = 0
-
-        signals.iat[i, signals.columns.get_loc('curr_position')] = in_position
-
-    return signals
-
-def generate_dynamic_signals(z_scores: pd.Series, entry_band: float = 1.0, exit_band: float = 0.1) -> pd.DataFrame:
-    """
-    Generate long, short, and exit signals using dynamic z-scores with scaled volatility bands.
-    Uses the output from the compute_dynamic_zscore method in pairs_analysis.py.
-
-    Args:
-        z_scores (pd.Series): Time series of z-scores (already volatility-adjusted).
-        entry_band (float): Entry threshold multiplier (applied to dynamic z).
-        exit_band (float): Exit threshold for mean reversion.
-
-    Returns:
-        pd.DataFrame: Signal DataFrame with columns: ['Long', 'Short', 'Exit', 'Z-Score', 'curr_position']
+        pd.DataFrame: Signal DataFrame.
     """
     signals = pd.DataFrame(index=z_scores.index)
     signals["Z-Score"] = z_scores
-
     signals["Long"] = (z_scores < -entry_band).astype(int)
     signals["Short"] = (z_scores > entry_band).astype(int)
     signals["Exit"] = (z_scores.abs() < exit_band).astype(int)
@@ -66,18 +25,13 @@ def generate_dynamic_signals(z_scores: pd.Series, entry_band: float = 1.0, exit_
     in_position = 0
 
     for i in range(1, len(signals)):
-        long_signal = signals.iloc[i]["Long"]
-        short_signal = signals.iloc[i]["Short"]
-        exit_signal = signals.iloc[i]["Exit"]
-
         if in_position == 0:
-            if long_signal:
+            if signals.iloc[i]["Long"]:
                 in_position = 1
-            elif short_signal:
+            elif signals.iloc[i]["Short"]:
                 in_position = -1
-        elif in_position != 0 and exit_signal:
+        elif in_position != 0 and signals.iloc[i]["Exit"]:
             in_position = 0
-
         signals.iat[i, signals.columns.get_loc("curr_position")] = in_position
 
     return signals

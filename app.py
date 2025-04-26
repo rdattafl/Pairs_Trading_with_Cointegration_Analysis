@@ -20,7 +20,7 @@ Feature	Description
 🧠 Educational Tooltips	Use Streamlit expander/tooltips to explain concepts interactively (e.g., “What is Cointegration?”)
 """
 
-# Section 1 - App configuration and imports
+# === 1. App Config and Imports ===
 
 import streamlit as st
 import pandas as pd
@@ -32,8 +32,10 @@ from data_utils import *
 from pairs_analysis import *
 from strategy_simulation import *
 
+
 # === 2. Page Config ===
 st.set_page_config(page_title="Pairs Trading Simulator", layout="wide")
+
 
 # === 3. Sidebar Inputs ===
 st.sidebar.header("⚙️ Strategy Configuration")
@@ -92,6 +94,7 @@ tabs = st.tabs([
 
 if 'cleaned_returns_dict' not in st.session_state:
     st.session_state['cleaned_returns_dict'] = {}
+
 
 # === 4. Data Download ===
 # Call download_pair_data or download_multiple_pairs
@@ -169,25 +172,6 @@ with tabs[1]:
             with st.expander(f"📈 {ticker1} / {ticker2} Cointegration Results"):
                 st.dataframe(df.style.background_gradient(cmap="YlGnBu"), use_container_width=True)
 
-        # st.markdown("---")
-
-        # st.subheader("📊 Filter Cointegrated Pairs Only")
-
-        # only_coint_pairs = st.checkbox("Show only pairs where cointegration detected (p < 0.05)", value=True)
-
-        # if only_coint_pairs:
-        #     # Filtering: show if either direction has cointegration True
-        #     filtered_df = coint_summary_df[
-        #         (coint_summary_df.filter(like="Cointegrated").any(axis=1))
-        #     ]
-        # else:
-        #     filtered_df = coint_summary_df
-
-        # st.dataframe(
-        #     filtered_df.style.background_gradient(cmap="PuBu"),
-        #     use_container_width=True
-        # )
-
 
 # === 6. Strategy Logic Per Pair ===
 # Compute hedge ratio, spread, z-score, signals
@@ -195,6 +179,7 @@ with tabs[1]:
 with tabs[2]:
     st.header("⚙️ Strategy Logic and Signals")
 
+    
 
 # === 7. Backtesting (Per Pair or Portfolio) ===
 # simulate_backtest() or simulate_portfolio_backtest()
