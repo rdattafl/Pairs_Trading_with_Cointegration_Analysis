@@ -55,32 +55,25 @@ def analyze_multiple_pairs(pair_data_dict, test_method='eg'):
     Returns:
         pd.DataFrame: DataFrame summarizing p-values, cointegration status, and hedge ratios for both directions.
     """
-    results = []
+    results = {}
 
     for (ticker1, ticker2), df in pair_data_dict.items():
         ts1, ts2 = df[ticker1], df[ticker2]
-
-        # Engle-Granger coint test: ts1 ~ ts2
         pval_1 = coint(ts1, ts2)[1]
-        is_coint_1 = pval_1 < 0.05
-        hedge_ratio_1 = calculate_hedge_ratio(ts1, ts2, method='ols')
-
-        # Engle-Granger coint test: ts2 ~ ts1 (reverse)
         pval_2 = coint(ts2, ts1)[1]
+        is_coint_1 = pval_1 < 0.05
         is_coint_2 = pval_2 < 0.05
+        hedge_ratio_1 = calculate_hedge_ratio(ts1, ts2, method='ols')
         hedge_ratio_2 = calculate_hedge_ratio(ts2, ts1, method='ols')
 
-        results.append({
-            "Pair": f"{ticker1}/{ticker2}",
-            "P-Value ({}~{})".format(ticker1, ticker2): f"{pval_1:.2e}",
-            "Cointegrated ({}~{})".format(ticker1, ticker2): is_coint_1,
-            "Hedge Ratio ({}~{})".format(ticker1, ticker2): f"{hedge_ratio_1:.4e}",
-            "P-Value ({}~{})".format(ticker2, ticker1): f"{pval_2:.2e}",
-            "Cointegrated ({}~{})".format(ticker2, ticker1): is_coint_2,
-            "Hedge Ratio ({}~{})".format(ticker2, ticker1): f"{hedge_ratio_2:.4e}"
+        results[(ticker1, ticker2)] = pd.DataFrame({
+            "Test Direction": [f"{ticker1} ~ {ticker2}", f"{ticker2} ~ {ticker1}"],
+            "P-Value": [f"{pval_1:.2e}", f"{pval_2:.2e}"],
+            "Cointegrated?": [is_coint_1, is_coint_2],
+            "Hedge Ratio": [f"{hedge_ratio_1:.4e}", f"{hedge_ratio_2:.4e}"]
         })
 
-    return pd.DataFrame(results)
+    return results
 
 def compute_spread(ts1, ts2, hedge_ratio):
     """

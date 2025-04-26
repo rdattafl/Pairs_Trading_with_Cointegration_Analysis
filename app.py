@@ -159,16 +159,15 @@ with tabs[1]:
         # st.subheader("Run Cointegration Tests Across Pairs")
 
         with st.spinner("Running Engle-Granger tests..."):
-            coint_summary_df = analyze_multiple_pairs(cleaned_returns_dict)
+            coint_results_dict = analyze_multiple_pairs(cleaned_returns_dict)
 
         # st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
 
         st.success("✅ Cointegration analysis complete!")
 
-        st.dataframe(
-            coint_summary_df.style.background_gradient(cmap="YlGnBu"),
-            use_container_width=True
-        )
+        for (ticker1, ticker2), df in coint_results_dict.items():
+            with st.expander(f"📈 {ticker1} / {ticker2} Cointegration Results"):
+                st.dataframe(df.style.background_gradient(cmap="YlGnBu"), use_container_width=True)
 
         # st.markdown("---")
 
