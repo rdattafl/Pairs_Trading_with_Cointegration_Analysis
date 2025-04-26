@@ -76,7 +76,7 @@ tabs = st.tabs([
     "⚙️ Strategy Logic",
     "📈 Backtesting",
     "📚 Glossary & Education",
-    "Export Options"
+    "💾 Export Options"
 ])
 
 if 'cleaned_returns_dict' not in st.session_state:
@@ -284,12 +284,79 @@ with tabs[2]:
             )
 
 
-
 # === 7. Backtesting (Per Pair or Portfolio) ===
 # simulate_backtest() or simulate_portfolio_backtest()
 # Show metrics and plots
 with tabs[3]:
     st.header("📈 Backtesting and Portfolio Analysis")
+
+    # 1. Check if strategy logic is ready
+    if 'strategy_logic_df' not in st.session_state:
+        st.warning("⚠️ No strategy logic computed yet. Please generate signals in the previous tab.")
+    else:
+        st.subheader("🔹 Single Pair Backtest Simulation")
+
+        strategy_logic_df = st.session_state['strategy_logic_df']
+        cleaned_returns_dict = st.session_state.get('cleaned_returns_dict', {})
+
+        # 2. Reconstruct necessary inputs
+        # Infer selected pair
+        selected_pair = st.session_state.get('selected_pair_name', None)
+        if not selected_pair:
+            st.error("❌ Could not infer selected pair for backtesting.")
+
+        # Parse the selected pair back into tuple
+        ticker1, ticker2 = selected_pair.split("_")
+        pair_key = (ticker1, ticker2)
+
+        if pair_key not in cleaned_returns_dict:
+            st.error(f"❌ Data for selected pair {pair_key} not found.")
+
+        returns_df = cleaned_returns_dict[pair_key]
+
+        # Extract hedge ratio and signals
+        hedge_ratios = st.session_state['current_hedge_ratios']['hedge_ratio_1on2']
+        signals = st.session_state['strategy_logic_df'][f"Position ({ticker1} ~ {ticker2})"].to_frame()
+        # signals.rename(columns={signals.columns[0]: 'curr_position'}, inplace=True)
+
+        # 3. Prepare parameters
+        backtest_params = {
+            'max_hold_days': max_hold_days,
+            'take_profit': take_profit,
+            'stop_loss': stop_loss,
+            'cooldown_days': cooldown_days,
+            'slippage': slippage_bps,
+            'transaction_cost': tx_cost_bps
+        }
+
+        # 4. Run the backtest
+        with st.spinner("Running backtest simulation..."):
+            backtest_results = simulate_backtest(
+                returns_df=returns_df,
+                hedge_ratios=hedge_ratios,
+                signals=signals,
+                parameters=backtest_params
+            )
+
+        st.success("✅ Backtest simulation complete!")
+
+        # 5. Visualize the cumulative returns
+        st.subheader("📈 Strategy Cumulative Returns")
+
+        fig, ax = plt.subplots(figsize=(10, 4))
+        ax.plot(backtest_results.index, backtest_results['cumulative_returns'], label='Cumulative Returns')
+        ax.set_xlabel("Date")
+        ax.set_ylabel("Portfolio Value")
+        ax.set_title("Backtested Strategy Performance")
+        ax.grid(True)
+        ax.legend()
+        st.pyplot(fig)
+
+        # 6. Save backtest results to session state
+        st.session_state['backtest_results'] = backtest_results
+
+        with st.expander("🔍 View Detailed Backtest Data"):
+            st.dataframe(backtest_results, use_container_width=True)    
 
 
 # === 8. Glossary / Educational Panel ===
