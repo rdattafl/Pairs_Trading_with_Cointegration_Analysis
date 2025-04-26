@@ -99,19 +99,27 @@ if download_data:
             end_date.strftime("%Y-%m-%d")
         )
 
-        cleaned_returns_dict = {}
-        for pair_key, price_df in raw_pair_data.items():
-            try:
-                if price_df is not None and not price_df.empty:
-                    returns_df = get_returns(price_df)
-                    if not returns_df.empty:
-                        cleaned_returns_dict[pair_key] = returns_df
-                    else:
-                        st.warning(f"No returns computed for pair {pair_key}.")
+    st.write("✅ Raw downloaded data keys:", list(raw_pair_data.keys()))  # Force print to Streamlit
+
+    cleaned_returns_dict = {}
+    for pair_key, price_df in raw_pair_data.items():
+        st.write(f"🔍 Checking raw price_df for pair {pair_key}")
+        st.dataframe(price_df.head())  # Show first few rows if exists
+
+        try:
+            if price_df is not None and not price_df.empty:
+                returns_df = get_returns(price_df)
+                st.write(f"📈 Returns sample for {pair_key}:")
+                st.dataframe(returns_df.head())
+
+                if not returns_df.empty:
+                    cleaned_returns_dict[pair_key] = returns_df
                 else:
-                    st.warning(f"No price data available for {pair_key}.")
-            except Exception as e:
-                st.error(f"Failed to process returns for pair {pair_key}: {e}")
+                    st.warning(f"⚠️ No returns computed for pair {pair_key}.")
+            else:
+                st.warning(f"⚠️ No price data available for {pair_key}.")
+        except Exception as e:
+            st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
 
     if not cleaned_returns_dict:
         st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
