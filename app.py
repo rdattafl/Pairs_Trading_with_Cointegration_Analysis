@@ -164,6 +164,68 @@ with tabs[1]:
 with tabs[2]:
     st.header("⚙️ Strategy Logic and Signals")
 
+    # 1. Check if data is loaded
+    cleaned_returns_dict = st.session_state.get('cleaned_returns_dict', {})
+
+    if not cleaned_returns_dict:
+        st.warning("Please first download and load some stock pair data.")
+    else:
+        # 2. Let user select which pair to visualize strategy logic for
+        pair_selection = st.selectbox(
+            "Select a Stock Pair to Analyze:",
+            options=list(cleaned_returns_dict.keys()),
+            format_func=lambda x: f"{x[0]} / {x[1]}"
+        )
+
+        if pair_selection:
+            returns_df = cleaned_returns_dict[pair_selection]
+
+            ticker1, ticker2 = returns_df.columns
+
+            st.subheader(f"Selected Pair: {ticker1} / {ticker2}")
+
+            # 3. Compute rolling hedge ratio
+            hedge_ratio = calculate_hedge_ratio(
+                returns_df[ticker1], 
+                returns_df[ticker2],
+                method="rolling", 
+                window=60
+            )
+
+            # 4. Compute spread
+            spread = compute_spread(
+                returns_df[ticker1], 
+                returns_df[ticker2], 
+                hedge_ratio
+            )
+
+            st.success("✅ Spread computed using rolling hedge ratio!")
+
+            # 5. Compute z-score
+            zscore_vol_adj = compute_zscore(
+                spread, 
+                lookback=60, 
+                volatility_scale=True
+            )
+
+            zscore_standard = compute_zscore(
+                spread, 
+                lookback=60, 
+                volatility_scale=False
+            )
+
+            st.success("✅ Z-score (both standard and volatility-adjusted) computed!")
+
+            # 6. Display a quick overview
+            st.markdown("### Preview of Spread and Z-Score")
+            st.dataframe(
+                pd.DataFrame({
+                    "Spread": spread,
+                    "Z-Score (Standard)": zscore_standard,
+                    "Z-Score (Volatility Adjusted)": zscore_vol_adj
+                }).dropna().head(10)
+            )
+
 
 
 # === 7. Backtesting (Per Pair or Portfolio) ===

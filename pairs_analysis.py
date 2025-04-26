@@ -51,7 +51,7 @@ def analyze_multiple_pairs(pair_data_dict, test_method='eg'):
             "Test Direction": [f"{ticker1} ~ {ticker2}", f"{ticker2} ~ {ticker1}"],
             "P-Value": [f"{pval_1:.2e}", f"{pval_2:.2e}"],
             "Cointegrated?": [is_coint_1, is_coint_2],
-            "Hedge Ratio": [f"{hedge_ratio_1:.4e}", f"{hedge_ratio_2:.4e}"]
+            "Hedge Ratio (OLS)": [f"{hedge_ratio_1:.4e}", f"{hedge_ratio_2:.4e}"]
         })
 
     return results
