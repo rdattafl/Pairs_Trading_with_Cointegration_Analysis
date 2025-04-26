@@ -135,6 +135,7 @@ with tabs[0]:
             st.stop()
         else:
             st.success(f"✅ Successfully loaded {len(cleaned_returns_dict)} pair(s)!")
+            st.session_state['cleaned_returns_dict'] = cleaned_returns_dict
             
             # Show the returns dataframes in expandable sections
             for pair_key, returns_df in cleaned_returns_dict.items():
