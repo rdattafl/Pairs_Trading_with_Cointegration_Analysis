@@ -164,13 +164,11 @@ with tabs[1]:
 with tabs[2]:
     st.header("⚙️ Strategy Logic and Signals")
 
-    # 1. Check if data is loaded
     cleaned_returns_dict = st.session_state.get('cleaned_returns_dict', {})
 
     if not cleaned_returns_dict:
         st.warning("Please first download and load some stock pair data.")
     else:
-        # 2. Let user select which pair to visualize strategy logic for
         pair_selection = st.selectbox(
             "Select a Stock Pair to Analyze:",
             options=list(cleaned_returns_dict.keys()),
@@ -184,7 +182,6 @@ with tabs[2]:
 
             st.subheader(f"Selected Pair: {ticker1} / {ticker2}")
 
-            # 3. Compute rolling hedge ratio
             hedge_ratio_1on2 = calculate_hedge_ratio(
                 returns_df[ticker1], returns_df[ticker2],
                 method="rolling", window=60
@@ -194,7 +191,6 @@ with tabs[2]:
                 method="rolling", window=60
             )
 
-            # 4. Compute spread
             spread_1on2 = compute_spread(
                 returns_df[ticker1], returns_df[ticker2], hedge_ratio_1on2
             )
@@ -237,30 +233,51 @@ with tabs[2]:
                 'hedge_ratio_2on1': hedge_ratio_2on1
             }
 
-            # # 5. Compute z-score
-            # zscore_vol_adj = compute_zscore(
-            #     spread, 
-            #     lookback=60, 
-            #     volatility_scale=True
-            # )
+            zscore_vol_adj_1 = compute_zscore(
+                spread_1on2, 
+                lookback=60, 
+                volatility_scale=True
+            )
 
-            # zscore_standard = compute_zscore(
-            #     spread, 
-            #     lookback=60, 
-            #     volatility_scale=False
-            # )
+            zscore_vol_adj_2 = compute_zscore(
+                spread_2on1, 
+                lookback=60, 
+                volatility_scale=True
+            )
 
-            # st.success("✅ Z-score (both standard and volatility-adjusted) computed!")
+            st.success("✅ Z-scores (volatility-adjusted) computed for both hedge directions!")
 
-            # # 6. Display a quick overview
-            # st.markdown("### Preview of Spread and Z-Score")
-            # st.dataframe(
-            #     pd.DataFrame({
-            #         "Spread": spread,
-            #         "Z-Score (Standard)": zscore_standard,
-            #         "Z-Score (Volatility Adjusted)": zscore_vol_adj
-            #     }).dropna().head(10)
-            # )
+            signals_1 = generate_signals(
+                zscore_vol_adj_1,
+                entry_band=entry_threshold,
+                exit_band=exit_threshold
+            )
+
+            signals_2 = generate_signals(
+                zscore_vol_adj_2,
+                entry_band=entry_threshold,
+                exit_band=exit_threshold
+            )
+
+            st.success("✅ Trading signals generated for both hedge directions!")
+
+            strategy_logic_df = pd.DataFrame(index=spread_1on2.dropna().index)
+
+            strategy_logic_df[f"Spread ({ticker1} ~ {ticker2})"] = spread_1on2
+            strategy_logic_df[f"Z-Score ({ticker1} ~ {ticker2})"] = zscore_vol_adj_1
+            strategy_logic_df[f"Position ({ticker1} ~ {ticker2})"] = signals_1['curr_position']
+
+            strategy_logic_df[f"Spread ({ticker2} ~ {ticker1})"] = spread_2on1
+            strategy_logic_df[f"Z-Score ({ticker2} ~ {ticker1})"] = zscore_vol_adj_2
+            strategy_logic_df[f"Position ({ticker2} ~ {ticker1})"] = signals_2['curr_position']
+
+            strategy_logic_df.dropna(inplace=True)
+
+            st.markdown("### 📈 Strategy Signals and Z-Scores Overview")
+            st.dataframe(
+                strategy_logic_df.style.background_gradient(cmap="coolwarm"),
+                use_container_width=True
+            )
 
 
 
