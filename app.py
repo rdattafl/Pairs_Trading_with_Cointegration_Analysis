@@ -311,8 +311,6 @@ with tabs[3]:
         signals = st.session_state['strategy_logic_df'][f"Position ({ticker1} ~ {ticker2})"].to_frame()
         signals.rename(columns={signals.columns[0]: 'curr_position'}, inplace=True)
 
-        st.pyplot(hedge_ratios)
-
         # 3. Prepare parameters
         backtest_params = {
             'max_hold_days': max_hold_days,
