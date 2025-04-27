@@ -55,10 +55,9 @@ download_data = st.sidebar.button("📥 Download Ticker Data for Selected Pairs"
 #     help="Dynamic z-scores use scaled volatility bands."
 # )
 
+st.sidebar.markdown("### Trade Logic & Risk Settings")
 entry_threshold = st.sidebar.slider("Entry Threshold", 0.5, 3.0, 1.5, 0.1)
 exit_threshold = st.sidebar.slider("Exit Threshold", 0.0, 1.0, 0.05, 0.05)
-
-st.sidebar.markdown("### Trade Logic & Risk Settings")
 max_hold_days = st.sidebar.number_input("Max Hold Days", 1, 60, 20)
 take_profit = st.sidebar.number_input("Take Profit (%)", 0.0, 100.0, 10.0) / 100
 stop_loss = -st.sidebar.number_input("Stop Loss (%)", 0.0, 100.0, 5.0) / 100
@@ -71,6 +70,7 @@ run_portfolio = st.sidebar.checkbox("Run Portfolio Backtest", value=False)
 top_n = st.sidebar.slider("Top N Pairs to Trade", 1, 5, 3)
 
 tabs = st.tabs([
+    "🏠 Introduction"
     "📥 Data Download",
     "🔍 Cointegration Analysis",
     "⚙️ Strategy Logic",
@@ -82,11 +82,67 @@ tabs = st.tabs([
 if 'cleaned_prices_dict' not in st.session_state:
     st.session_state['cleaned_prices_dict'] = {}
 
+with tabs[0]:
+    st.header("🏠 Welcome to the Pairs Trading Simulator")
+
+    st.markdown(
+        """
+        ## Overview
+        
+        This app allows you to explore **market-neutral pairs trading strategies** based on **cointegration** between stock pairs.
+        
+        You can:
+        - 📥 **Download** historical stock price data for your chosen pairs.
+        - 🔍 **Analyze** their statistical relationship (cointegration, hedge ratios, spreads, z-scores).
+        - ⚙️ **Configure** trading strategy parameters such as entry/exit thresholds, max hold periods, and risk controls.
+        - 📈 **Simulate** full historical backtests of the trading strategy.
+        - 📚 **Learn** about the core concepts through a built-in glossary.
+
+        ---
+        
+        ## How to Use This App
+        
+        1. **Configure your strategy settings** in the sidebar (dates, pairs, thresholds, etc.).
+        2. **Download stock data** for the selected pairs (click the 📥 button).
+        3. Navigate across the tabs:
+            - **🔍 Cointegration Analysis**: Check if stock pairs are statistically linked.
+            - **⚙️ Strategy Logic**: See spreads, hedge ratios, and generated trading signals.
+            - **📈 Backtesting**: Simulate and visualize the cumulative returns of your strategy.
+            - **📚 Glossary & Education**: Learn the key concepts if needed.
+            - **💾 Export Options**: Save your results for offline analysis.
+
+        ---
+        
+        ## What Is Pairs Trading?
+        
+        **Pairs Trading** is a type of market-neutral strategy.  
+        It profits by exploiting **mean-reverting relationships** between two historically related stocks.
+        
+        The basic idea:
+        - If one stock becomes expensive relative to the other, **short the expensive stock** and **buy the cheap stock**.
+        - When the relationship returns to normal, **close both positions** and lock in a profit.
+
+        This app helps you identify, design, and simulate such trading strategies easily!
+
+        ---
+        
+        ## Important Tips
+        
+        - Use **cointegrated** pairs for best results (not just correlated pairs).
+        - Always apply **risk management** (take-profit, stop-loss, max hold days, cooldowns).
+        - Past performance does not guarantee future returns.
+
+        ---
+        
+        Happy exploring! 🚀
+        """
+    )
+
 
 # === 4. Data Download ===
 # Call download_pair_data or download_multiple_pairs
 # Clean data using clean_data(), get_returns()
-with tabs[0]:
+with tabs[1]:
     st.header("📥 Load and Clean Historical Price Data")
 
     cleaned_prices_dict = st.session_state['cleaned_prices_dict']
@@ -126,7 +182,7 @@ with tabs[0]:
 
 # === 5. Cointegration Analysis ===
 # Call analyze_multiple_pairs(), display table and filtering
-with tabs[1]:
+with tabs[2]:
     st.header("🔍 Cointegration Testing")
 
     if not st.session_state.get('cleaned_prices_dict'):
@@ -149,7 +205,7 @@ with tabs[1]:
 # === 6. Strategy Logic Per Pair ===
 # Compute hedge ratio, spread, z-score, signals
 # Visualize spread and z-score
-with tabs[2]:
+with tabs[3]:
     st.header("⚙️ Strategy Logic and Signals")
 
     cleaned_prices_dict = st.session_state.get('cleaned_prices_dict', {})
@@ -277,7 +333,7 @@ with tabs[2]:
 # === 7. Backtesting (Per Pair or Portfolio) ===
 # simulate_backtest() or simulate_portfolio_backtest()
 # Show metrics and plots
-with tabs[3]:
+with tabs[4]:
     st.header("📈 Backtesting and Portfolio Analysis")
 
     # 1. Check if strategy logic is ready
@@ -354,7 +410,7 @@ with tabs[3]:
 
 # === 8. Glossary / Educational Panel ===
 # Use st.sidebar.expander or st.expander blocks
-with tabs[4]:
+with tabs[5]:
     st.header("📚 Glossary and Educational Insights")
 
     st.markdown(
@@ -440,7 +496,7 @@ with tabs[4]:
 
 # === 9. Export Options ===
 # st.download_button for DataFrame CSV export
-with tabs[5]:
+with tabs[6]:
     st.header("💾 Export Results")
 
     st.markdown("You can export key outputs for further offline analysis.")
