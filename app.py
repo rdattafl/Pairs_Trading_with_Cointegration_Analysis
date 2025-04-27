@@ -61,7 +61,7 @@ exit_threshold = st.sidebar.slider("Exit Threshold", 0.0, 1.0, 0.05, 0.05)
 st.sidebar.markdown("### Trade Logic & Risk Settings")
 max_hold_days = st.sidebar.number_input("Max Hold Days", 1, 60, 20)
 take_profit = st.sidebar.number_input("Take Profit (%)", 0.0, 100.0, 10.0) / 100
-stop_loss = st.sidebar.number_input("Stop Loss (%)", 0.0, 100.0, 5.0) / 100
+stop_loss = st.sidebar.number_input("Stop Loss (%)", 0.0, -100.0, -5.0) / 100
 cooldown_days = st.sidebar.number_input("Cooldown Days", 0, 10, 5)
 
 slippage_bps = st.sidebar.number_input("Slippage (bps)", 0, 100, 10)
@@ -246,8 +246,8 @@ with tabs[2]:
                 volatility_scale=False
             )
 
-            st.line_chart(zscore_vol_adj_1)
-            st.line_chart(zscore_vol_adj_2)
+            # st.line_chart(zscore_vol_adj_1)
+            # st.line_chart(zscore_vol_adj_2)
 
             st.success("✅ Z-scores (volatility-adjusted) computed for both hedge directions!")
 
