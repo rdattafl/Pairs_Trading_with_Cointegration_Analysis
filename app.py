@@ -119,10 +119,9 @@ with tabs[0]:
                 st.session_state['cleaned_prices_dict'] = temp_prices_dict
                 cleaned_prices_dict = temp_prices_dict
                 
-        # Show the returns dataframes in expandable sections
-        for pair_key, returns_df in cleaned_prices_dict.items():
-            with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
-                st.dataframe(returns_df)
+        for pair_key, prices_df in cleaned_prices_dict.items():
+            with st.expander(f"View Prices for {pair_key[0]} / {pair_key[1]}"):
+                st.dataframe(prices_df)
 
 
 # === 5. Cointegration Analysis ===
@@ -311,6 +310,8 @@ with tabs[3]:
         hedge_ratios = st.session_state['current_hedge_ratios']['hedge_ratio_1on2']
         signals = st.session_state['strategy_logic_df'][f"Position ({ticker1} ~ {ticker2})"].to_frame()
         signals.rename(columns={signals.columns[0]: 'curr_position'}, inplace=True)
+
+        st.pyplot(hedge_ratios)
 
         # 3. Prepare parameters
         backtest_params = {
