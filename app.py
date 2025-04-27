@@ -43,17 +43,17 @@ selected_pairs = st.sidebar.multiselect(
 
 download_data = st.sidebar.button("📥 Download Ticker Data for Selected Pairs")
 
-hedge_method = st.sidebar.radio(
-    "Hedge Ratio Estimation",
-    ["ols", "rolling"],
-    help="OLS fits a static beta; rolling uses a dynamic windowed estimate."
-)
+# hedge_method = st.sidebar.radio(
+#     "Hedge Ratio Estimation",
+#     ["ols", "rolling"],
+#     help="OLS fits a static beta; rolling uses a dynamic windowed estimate."
+# )
 
-zscore_type = st.sidebar.radio(
-    "Z-score Type",
-    ["Static", "Dynamic"],
-    help="Dynamic z-scores use scaled volatility bands."
-)
+# zscore_type = st.sidebar.radio(
+#     "Z-score Type",
+#     ["Static", "Dynamic"],
+#     help="Dynamic z-scores use scaled volatility bands."
+# )
 
 entry_threshold = st.sidebar.slider("Entry Threshold", 0.5, 3.0, 1.5, 0.1)
 exit_threshold = st.sidebar.slider("Exit Threshold", 0.0, 1.0, 0.05, 0.05)
@@ -323,7 +323,7 @@ with tabs[3]:
 
         # 4. Run the backtest
         with st.spinner("Running backtest simulation..."):
-            st.write(f"backtest_params: ", backtest_params)
+            # st.write(f"backtest_params: ", backtest_params)
             backtest_results = simulate_backtest(
                 returns_df=returns_df,
                 hedge_ratios=hedge_ratios,
