@@ -43,7 +43,7 @@ def simulate_backtest(returns_df, hedge_ratios, signals, parameters):
     Args:
         returns_df (pd.DataFrame): DataFrame containing returns of the cointegrated pair of assets. (from data_utils.get_returns())
         hedge_ratios (pd.Series): Time-varying hedge ratio. (from pairs_analysis.calculate_hedge_ratio())
-        signals (pd.DataFrame): Signal DataFrame with curr_position. (either generate_signals() or generate_dynamic_signals())
+        signals (pd.DataFrame): Signal DataFrame with curr_position.
         parameters (dict): Dictionary with keys: (from Streamlit UI)
             - 'max_hold_days'
             - 'take_profit'
