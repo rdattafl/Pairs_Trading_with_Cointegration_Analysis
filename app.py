@@ -70,7 +70,7 @@ run_portfolio = st.sidebar.checkbox("Run Portfolio Backtest", value=False)
 top_n = st.sidebar.slider("Top N Pairs to Trade", 1, 5, 3)
 
 tabs = st.tabs([
-    "🏠 Introduction"
+    "🏠 Introduction",
     "📥 Data Download",
     "🔍 Cointegration Analysis",
     "⚙️ Strategy Logic",
