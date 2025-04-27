@@ -334,6 +334,7 @@ with tabs[3]:
 
         # 4. Run the backtest
         with st.spinner("Running backtest simulation..."):
+            st.write(f"backtest_params: ", backtest_params)
             backtest_results = simulate_backtest(
                 returns_df=returns_df,
                 hedge_ratios=hedge_ratios,

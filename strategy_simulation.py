@@ -106,8 +106,8 @@ def simulate_backtest(returns_df, hedge_ratios, signals, parameters):
             strat_ret = leg1 + leg2
 
             # only on the entry day of the trade do we actually deduct it, not every day
-            # if entry_cost > 0:
-            #     strat_ret -= entry_cost
+            if entry_cost > 0:
+                strat_ret -= entry_cost
 
             entry_cumret *= (1 + strat_ret)
             days_held += 1
