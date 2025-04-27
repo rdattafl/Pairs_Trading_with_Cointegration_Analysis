@@ -19,7 +19,7 @@ def calculate_hedge_ratio(ts1, ts2, method="rolling" or "ols", window=60):
         return model.params[1]
     elif method == "rolling":
         ratio = ts1.rolling(window).corr(ts2) * (
-            ts2.rolling(window).std() / ts1.rolling(window).std()
+            ts1.rolling(window).std() / ts2.rolling(window).std()
         )
         return ratio
     else:

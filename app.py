@@ -79,8 +79,8 @@ tabs = st.tabs([
     "💾 Export Options"
 ])
 
-if 'cleaned_returns_dict' not in st.session_state:
-    st.session_state['cleaned_returns_dict'] = {}
+if 'cleaned_prices_dict' not in st.session_state:
+    st.session_state['cleaned_prices_dict'] = {}
 
 
 # === 4. Data Download ===
@@ -89,7 +89,7 @@ if 'cleaned_returns_dict' not in st.session_state:
 with tabs[0]:
     st.header("📥 Load and Clean Historical Price Data")
 
-    cleaned_returns_dict = st.session_state['cleaned_returns_dict']
+    cleaned_prices_dict = st.session_state['cleaned_prices_dict']
 
     if not selected_pairs:
         st.warning("Please select at least one stock pair from the sidebar.")
@@ -102,37 +102,25 @@ with tabs[0]:
                     end_date.strftime("%Y-%m-%d")
                 )
 
-            # st.write("✅ Raw downloaded data keys:", list(raw_pair_data.keys()))  # Force print to Streamlit
-
-            temp_returns_dict = {}
+            temp_prices_dict = {}
             for pair_key, price_df in raw_pair_data.items():
-                # st.write(f"🔍 Checking raw price_df for pair {pair_key}")
-                # st.dataframe(price_df.head())  # Show first few rows if exists
-
                 try:
                     if price_df is not None and not price_df.empty:
-                        returns_df = get_returns(price_df)
-                        # st.write(f"📈 Returns sample for {pair_key}:")
-                        # st.dataframe(returns_df.head())
-
-                        if not returns_df.empty:
-                            temp_returns_dict[pair_key] = returns_df
-                        else:
-                            st.warning(f"⚠️ No returns computed for pair {pair_key}.")
+                        temp_prices_dict[pair_key] = price_df
                     else:
                         st.warning(f"⚠️ No price data available for {pair_key}.")
                 except Exception as e:
                     st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
 
-            if not temp_returns_dict:
+            if not temp_prices_dict:
                 st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
             else:
-                st.success(f"✅ Successfully loaded {len(temp_returns_dict)} pair(s)!")
-                st.session_state['cleaned_returns_dict'] = temp_returns_dict
-                cleaned_returns_dict = temp_returns_dict
+                st.success(f"✅ Successfully loaded {len(temp_prices_dict)} pair(s)!")
+                st.session_state['cleaned_prices_dict'] = temp_prices_dict
+                cleaned_prices_dict = temp_prices_dict
                 
         # Show the returns dataframes in expandable sections
-        for pair_key, returns_df in cleaned_returns_dict.items():
+        for pair_key, returns_df in cleaned_prices_dict.items():
             with st.expander(f"View Returns for {pair_key[0]} / {pair_key[1]}"):
                 st.dataframe(returns_df)
 
@@ -142,13 +130,13 @@ with tabs[0]:
 with tabs[1]:
     st.header("🔍 Cointegration Testing")
 
-    if not st.session_state.get('cleaned_returns_dict'):
+    if not st.session_state.get('cleaned_prices_dict'):
         st.warning("Please first download stock pair data from the sidebar.")
     else:
         # st.subheader("Run Cointegration Tests Across Pairs")
 
         with st.spinner("Running Engle-Granger tests..."):
-            coint_results_dict = analyze_multiple_pairs(cleaned_returns_dict)
+            coint_results_dict = analyze_multiple_pairs(cleaned_prices_dict)
 
         # st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
 
@@ -165,38 +153,38 @@ with tabs[1]:
 with tabs[2]:
     st.header("⚙️ Strategy Logic and Signals")
 
-    cleaned_returns_dict = st.session_state.get('cleaned_returns_dict', {})
+    cleaned_prices_dict = st.session_state.get('cleaned_prices_dict', {})
 
-    if not cleaned_returns_dict:
+    if not cleaned_prices_dict:
         st.warning("Please first download and load some stock pair data.")
     else:
         pair_selection = st.selectbox(
             "Select a Stock Pair to Analyze:",
-            options=list(cleaned_returns_dict.keys()),
+            options=list(cleaned_prices_dict.keys()),
             format_func=lambda x: f"{x[0]} / {x[1]}"
         )
 
         if pair_selection:
-            returns_df = cleaned_returns_dict[pair_selection]
+            prices_df = cleaned_prices_dict[pair_selection]
 
-            ticker1, ticker2 = returns_df.columns
+            ticker1, ticker2 = prices_df.columns
 
             st.subheader(f"Selected Pair: {ticker1} / {ticker2}")
 
             hedge_ratio_1on2 = calculate_hedge_ratio(
-                returns_df[ticker1], returns_df[ticker2],
+                prices_df[ticker1], prices_df[ticker2],
                 method="rolling", window=60
             )
             hedge_ratio_2on1 = calculate_hedge_ratio(
-                returns_df[ticker2], returns_df[ticker1],
+                prices_df[ticker2], prices_df[ticker1],
                 method="rolling", window=60
             )
 
             spread_1on2 = compute_spread(
-                returns_df[ticker1], returns_df[ticker2], hedge_ratio_1on2
+                prices_df[ticker1], prices_df[ticker2], hedge_ratio_1on2
             )
             spread_2on1 = compute_spread(
-                returns_df[ticker2], returns_df[ticker1], hedge_ratio_2on1
+                prices_df[ticker2], prices_df[ticker1], hedge_ratio_2on1
             )
 
             st.success("✅ Rolling hedge ratios and spreads computed for both directions!")
@@ -300,7 +288,8 @@ with tabs[3]:
         st.subheader("🔹 Single Pair Backtest Simulation")
 
         strategy_logic_df = st.session_state['strategy_logic_df']
-        cleaned_returns_dict = st.session_state.get('cleaned_returns_dict', {})
+        # cleaned_ret_dict = st.session_state.get('cleaned_returns_dict', {})
+        cleaned_prices_dict = st.session_state.get('cleaned_prices_dict', {})
 
         # 2. Reconstruct necessary inputs
         # Infer selected pair
@@ -312,10 +301,11 @@ with tabs[3]:
         ticker1, ticker2 = selected_pair.split("_")
         pair_key = (ticker1, ticker2)
 
-        if pair_key not in cleaned_returns_dict:
-            st.error(f"❌ Data for selected pair {pair_key} not found.")
+        # if pair_key not in cleaned_returns_dict:
+        #     st.error(f"❌ Data for selected pair {pair_key} not found.")
 
-        returns_df = cleaned_returns_dict[pair_key]
+        prices_df = cleaned_prices_dict[pair_key]
+        returns_df = get_returns(prices_df)
 
         # Extract hedge ratio and signals
         hedge_ratios = st.session_state['current_hedge_ratios']['hedge_ratio_1on2']
