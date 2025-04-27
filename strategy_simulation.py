@@ -96,14 +96,19 @@ def simulate_backtest(returns_df, hedge_ratios, signals, parameters):
             entry_cumret = 1.0
             days_held = 0
             position = pos_signal
-            tx_cost = 2 * tx_cost_bps
+            entry_cost = 2 * (slippage_bps + tx_cost_bps)
         else:
-            tx_cost = 0.0
+            entry_cost = 0.0
 
         if in_trade:
             leg1 = position * row[asset1]
             leg2 = -position * row['hedge_ratio'] * row[asset2]
-            strat_ret = leg1 + leg2 - slippage_bps - tx_cost
+            strat_ret = leg1 + leg2
+
+            # only on the entry day of the trade do we actually deduct it, not every day
+            if entry_cost > 0:
+                strat_ret -= entry_cost
+
             entry_cumret *= (1 + strat_ret)
             days_held += 1
         else:
