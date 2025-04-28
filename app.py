@@ -84,6 +84,7 @@ if 'cleaned_prices_dict' not in st.session_state:
 
 with tabs[0]:
     st.header("🏠 Welcome to the Pairs Trading Simulator")
+    st.subheader("Made by Riju Datta")
 
     st.markdown(
         """
