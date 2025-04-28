@@ -88,7 +88,7 @@ with tabs[0]:
 
     st.markdown(
         """
-        ## Made by Riju Datta
+        #### Made by Riju Datta
 
         ## Overview
         
