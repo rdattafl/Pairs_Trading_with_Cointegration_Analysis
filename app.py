@@ -84,10 +84,12 @@ if 'cleaned_prices_dict' not in st.session_state:
 
 with tabs[0]:
     st.header("🏠 Welcome to the Pairs Trading Simulator")
-    st.subheader("Made by Riju Datta")
+    # st.subheader("Made by Riju Datta")
 
     st.markdown(
         """
+        ## Made by Riju Datta
+
         ## Overview
         
         This app allows you to explore **market-neutral pairs trading strategies** based on **cointegration** between stock pairs.
