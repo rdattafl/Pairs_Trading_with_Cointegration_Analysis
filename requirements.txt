@@ -3,7 +3,7 @@ yfinance
 pandas
 numpy
 matplotlib
-statsmodels
-scipy
+statsmodels=0.13.5
+scipy=1.10.1
 seaborn
 datetime
