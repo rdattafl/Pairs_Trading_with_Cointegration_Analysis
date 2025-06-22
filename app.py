@@ -66,8 +66,8 @@ cooldown_days = st.sidebar.number_input("Cooldown Days", 0, 10, 5)
 slippage_bps = st.sidebar.number_input("Slippage (bps)", 0, 100, 10)
 tx_cost_bps = st.sidebar.number_input("Transaction Cost (bps)", 0, 100, 5)
 
-run_portfolio = st.sidebar.checkbox("Run Portfolio Backtest", value=False)
-top_n = st.sidebar.slider("Top N Pairs to Trade", 1, 5, 3)
+# run_portfolio = st.sidebar.checkbox("Run Portfolio Backtest", value=False)
+# top_n = st.sidebar.slider("Top N Pairs to Trade", 1, 5, 3)
 
 tabs = st.tabs([
     "Introduction",
