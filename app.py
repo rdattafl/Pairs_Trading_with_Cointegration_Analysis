@@ -24,7 +24,7 @@ st.set_page_config(page_title="Pairs Trading Simulator", layout="wide")
 
 
 # === 3. Sidebar Inputs ===
-st.sidebar.header("⚙️ Strategy Configuration")
+st.sidebar.header("Strategy Configuration")
 
 start_date = st.sidebar.date_input("Start Date", value=date(2018, 1, 1))
 end_date = st.sidebar.date_input("End Date", value=date(2023, 12, 31))
@@ -70,20 +70,20 @@ run_portfolio = st.sidebar.checkbox("Run Portfolio Backtest", value=False)
 top_n = st.sidebar.slider("Top N Pairs to Trade", 1, 5, 3)
 
 tabs = st.tabs([
-    "🏠 Introduction",
-    "📥 Data Download",
-    "🔍 Cointegration Analysis",
-    "⚙️ Strategy Logic",
-    "📈 Backtesting",
-    "📚 Glossary & Education",
-    "💾 Export Options"
+    "Introduction",
+    "Data Download",
+    "Cointegration Analysis",
+    "Strategy Logic",
+    "Backtesting",
+    "Glossary & Education",
+    "Export Options"
 ])
 
 if 'cleaned_prices_dict' not in st.session_state:
     st.session_state['cleaned_prices_dict'] = {}
 
 with tabs[0]:
-    st.header("🏠 Welcome to the Pairs Trading Simulator")
+    st.header("Welcome to the Pairs Trading Simulator")
     # st.subheader("Made by Riju Datta")
 
     st.markdown(
@@ -95,11 +95,11 @@ with tabs[0]:
         This app allows you to explore **market-neutral pairs trading strategies** based on **cointegration** between stock pairs.
         
         You can:
-        - 📥 **Download** historical stock price data for your chosen pairs.
-        - 🔍 **Analyze** their statistical relationship (cointegration, hedge ratios, spreads, z-scores).
-        - ⚙️ **Configure** trading strategy parameters such as entry/exit thresholds, max hold periods, and risk controls.
-        - 📈 **Simulate** full historical backtests of the trading strategy.
-        - 📚 **Learn** about the core concepts through a built-in glossary.
+        - **Download** historical stock price data for your chosen pairs.
+        - **Analyze** their statistical relationship (cointegration, hedge ratios, spreads, z-scores).
+        - **Configure** trading strategy parameters such as entry/exit thresholds, max hold periods, and risk controls.
+        - **Simulate** full historical backtests of the trading strategy.
+        - **Learn** about the core concepts through a built-in glossary.
 
         ---
         
@@ -108,11 +108,11 @@ with tabs[0]:
         1. **Configure your strategy settings** in the sidebar (dates, pairs, thresholds, etc.).
         2. **Download stock data** for the selected pairs (click the 📥 button).
         3. Navigate across the tabs:
-            - **🔍 Cointegration Analysis**: Check if stock pairs are statistically linked.
-            - **⚙️ Strategy Logic**: See spreads, hedge ratios, and generated trading signals.
-            - **📈 Backtesting**: Simulate and visualize the cumulative returns of your strategy.
-            - **📚 Glossary & Education**: Learn the key concepts if needed.
-            - **💾 Export Options**: Save your results for offline analysis.
+            - **Cointegration Analysis**: Check if stock pairs are statistically linked.
+            - **Strategy Logic**: See spreads, hedge ratios, and generated trading signals.
+            - **Backtesting**: Simulate and visualize the cumulative returns of your strategy.
+            - **Glossary & Education**: Learn the key concepts if needed.
+            - **Export Options**: Save your results for offline analysis.
 
         ---
         
@@ -137,7 +137,7 @@ with tabs[0]:
 
         ---
         
-        Happy exploring! 🚀
+        Happy exploring!
         """
     )
 
@@ -146,7 +146,7 @@ with tabs[0]:
 # Call download_pair_data or download_multiple_pairs
 # Clean data using clean_data(), get_returns()
 with tabs[1]:
-    st.header("📥 Load and Clean Historical Price Data")
+    st.header("Load and Clean Historical Price Data")
 
     cleaned_prices_dict = st.session_state['cleaned_prices_dict']
 
@@ -167,14 +167,14 @@ with tabs[1]:
                     if price_df is not None and not price_df.empty:
                         temp_prices_dict[pair_key] = price_df
                     else:
-                        st.warning(f"⚠️ No price data available for {pair_key}.")
+                        st.warning(f"No price data available for {pair_key}.")
                 except Exception as e:
-                    st.error(f"🚨 Failed to process returns for {pair_key}: {e}")
+                    st.error(f"Failed to process returns for {pair_key}: {e}")
 
             if not temp_prices_dict:
-                st.error("❌ No valid pairs could be loaded. Check data or date ranges.")
+                st.error("No valid pairs could be loaded. Check data or date ranges.")
             else:
-                st.success(f"✅ Successfully loaded {len(temp_prices_dict)} pair(s)!")
+                st.success(f"Successfully loaded {len(temp_prices_dict)} pair(s)!")
                 st.session_state['cleaned_prices_dict'] = temp_prices_dict
                 cleaned_prices_dict = temp_prices_dict
                 
@@ -186,7 +186,7 @@ with tabs[1]:
 # === 5. Cointegration Analysis ===
 # Call analyze_multiple_pairs(), display table and filtering
 with tabs[2]:
-    st.header("🔍 Cointegration Testing")
+    st.header("Cointegration Testing")
 
     if not st.session_state.get('cleaned_prices_dict'):
         st.warning("Please first download stock pair data from the sidebar.")
@@ -198,10 +198,10 @@ with tabs[2]:
 
         # st.write("Coint pair downloaded keys:", list(coint_summary_df.keys()))
 
-        st.success("✅ Cointegration analysis complete!")
+        st.success("Cointegration analysis complete!")
 
         for (ticker1, ticker2), df in coint_results_dict.items():
-            with st.expander(f"📈 {ticker1} / {ticker2} Cointegration Results"):
+            with st.expander(f"{ticker1} / {ticker2} Cointegration Results"):
                 st.dataframe(df.style.background_gradient(cmap="YlGnBu"), use_container_width=True)
 
 
@@ -209,7 +209,7 @@ with tabs[2]:
 # Compute hedge ratio, spread, z-score, signals
 # Visualize spread and z-score
 with tabs[3]:
-    st.header("⚙️ Strategy Logic and Signals")
+    st.header("Strategy Logic and Signals")
 
     cleaned_prices_dict = st.session_state.get('cleaned_prices_dict', {})
 
@@ -245,10 +245,10 @@ with tabs[3]:
                 prices_df[ticker2], prices_df[ticker1], hedge_ratio_2on1
             )
 
-            st.success("✅ Rolling hedge ratios and spreads computed for both directions!")
+            st.success("Rolling hedge ratios and spreads computed for both directions!")
 
             # === Expanders for visualization ===
-            with st.expander("📈 Rolling Hedge Ratios"):
+            with st.expander("Rolling Hedge Ratios"):
                 fig, ax = plt.subplots(figsize=(10, 4))
                 ax.plot(hedge_ratio_1on2, label=f"{ticker1} ~ {ticker2}")
                 ax.plot(hedge_ratio_2on1, label=f"{ticker2} ~ {ticker1}")
@@ -259,7 +259,7 @@ with tabs[3]:
                 ax.grid(True)
                 st.pyplot(fig)
 
-            with st.expander("📈 Spread Time Series"):
+            with st.expander("Spread Time Series"):
                 fig, ax = plt.subplots(figsize=(10, 4))
                 ax.plot(spread_1on2, label=f"Spread: {ticker1} - HR * {ticker2}")
                 ax.plot(spread_2on1, label=f"Spread: {ticker2} - HR * {ticker1}")
@@ -295,7 +295,7 @@ with tabs[3]:
             # st.line_chart(zscore_vol_adj_1)
             # st.line_chart(zscore_vol_adj_2)
 
-            st.success("✅ Z-scores (volatility-adjusted) computed for both hedge directions!")
+            st.success("Z-scores (volatility-adjusted) computed for both hedge directions!")
 
             signals_1 = generate_signals(
                 zscore_vol_adj_1,
@@ -309,7 +309,7 @@ with tabs[3]:
                 exit_band=exit_threshold
             )
 
-            st.success("✅ Trading signals generated for both hedge directions!")
+            st.success("Trading signals generated for both hedge directions!")
 
             strategy_logic_df = pd.DataFrame(index=spread_1on2.dropna().index)
 
@@ -326,7 +326,7 @@ with tabs[3]:
             st.session_state['strategy_logic_df'] = strategy_logic_df
             st.session_state['selected_pair_name'] = f"{ticker1}_{ticker2}"
 
-            st.markdown("### 📈 Strategy Signals and Z-Scores Overview")
+            st.markdown("### Strategy Signals and Z-Scores Overview")
             st.dataframe(
                 strategy_logic_df.style.background_gradient(cmap="coolwarm"),
                 use_container_width=True
@@ -337,13 +337,13 @@ with tabs[3]:
 # simulate_backtest() or simulate_portfolio_backtest()
 # Show metrics and plots
 with tabs[4]:
-    st.header("📈 Backtesting and Portfolio Analysis")
+    st.header("Backtesting and Portfolio Analysis")
 
     # 1. Check if strategy logic is ready
     if 'strategy_logic_df' not in st.session_state:
-        st.warning("⚠️ No strategy logic computed yet. Please generate signals in the previous tab.")
+        st.warning("No strategy logic computed yet. Please generate signals in the previous tab.")
     else:
-        st.subheader("🔹 Single Pair Backtest Simulation")
+        st.subheader("Single Pair Backtest Simulation")
 
         strategy_logic_df = st.session_state['strategy_logic_df']
         # cleaned_ret_dict = st.session_state.get('cleaned_returns_dict', {})
@@ -353,14 +353,11 @@ with tabs[4]:
         # Infer selected pair
         selected_pair = st.session_state.get('selected_pair_name', None)
         if not selected_pair:
-            st.error("❌ Could not infer selected pair for backtesting.")
+            st.error("Could not infer selected pair for backtesting.")
 
         # Parse the selected pair back into tuple
         ticker1, ticker2 = selected_pair.split("_")
         pair_key = (ticker1, ticker2)
-
-        # if pair_key not in cleaned_returns_dict:
-        #     st.error(f"❌ Data for selected pair {pair_key} not found.")
 
         prices_df = cleaned_prices_dict[pair_key]
         returns_df = get_returns(prices_df)
@@ -390,10 +387,10 @@ with tabs[4]:
                 parameters=backtest_params
             )
 
-        st.success("✅ Backtest simulation complete!")
+        st.success("Backtest simulation complete!")
 
         # 5. Visualize the cumulative returns
-        st.subheader("📈 Strategy Cumulative Returns")
+        st.subheader("Strategy Cumulative Returns")
 
         fig, ax = plt.subplots(figsize=(10, 4))
         ax.plot(backtest_results.index, backtest_results['cumulative_returns'], label='Cumulative Returns')
@@ -407,14 +404,14 @@ with tabs[4]:
         # 6. Save backtest results to session state
         st.session_state['backtest_results'] = backtest_results
 
-        with st.expander("🔍 View Detailed Backtest Data"):
+        with st.expander("View Detailed Backtest Data"):
             st.dataframe(backtest_results, use_container_width=True)    
 
 
 # === 8. Glossary / Educational Panel ===
 # Use st.sidebar.expander or st.expander blocks
 with tabs[5]:
-    st.header("📚 Glossary and Educational Insights")
+    st.header("Glossary and Educational Insights")
 
     st.markdown(
         """
@@ -500,7 +497,7 @@ with tabs[5]:
 # === 9. Export Options ===
 # st.download_button for DataFrame CSV export
 with tabs[6]:
-    st.header("💾 Export Results")
+    st.header("Export Results")
 
     st.markdown("You can export key outputs for further offline analysis.")
 
@@ -508,13 +505,13 @@ with tabs[6]:
         filename = f"strategy_logic_signals_{st.session_state['selected_pair_name']}.csv"
 
         st.download_button(
-            label=f"📥 Download Strategy Logic ({st.session_state['selected_pair_name']})",
+            label=f"Download Strategy Logic ({st.session_state['selected_pair_name']})",
             data=st.session_state['strategy_logic_df'].to_csv(index=True),
             file_name=filename,
             mime="text/csv",
         )
     else:
-        st.info("ℹ️ Strategy logic not computed yet. Run a simulation first.")
+        st.info("Strategy logic not computed yet. Run a simulation first.")
 
 
 
